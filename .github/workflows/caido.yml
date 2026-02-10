@@ -15,12 +15,6 @@ jobs:
           - 8080:8080
         env:
           CAIDO_REGISTRATION_KEY: ${{ secrets.CAIDO_REGISTRATION_KEY }}
-        options: >-
-          --health-cmd "curl -f http://localhost:8080/health"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-          --health-start-period 5s
 
     steps:
       - name: Checkout Repo
