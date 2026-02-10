@@ -1,18 +1,5 @@
 import { Client } from "@caido/sdk-client";
 
-type QuickSSRFSettings = {
-  serverURL: string;
-  token: string;
-  pollingInterval: number;
-  correlationIdLength: number;
-  correlationIdNonceLength: number;
-};
-
-type GenerateUrlResult = {
-  url: string;
-  uniqueId: string;
-};
-
 async function main() {
   // Get the Caido instance URL from environment or use default
   const instanceUrl =
@@ -39,35 +26,8 @@ async function main() {
   await client.connect();
   console.log("✅ Connected to Caido instance");
 
-  const pluginPackage = await client.plugin.pluginPackage("quickssrf");
-  if (pluginPackage === undefined) {
-    console.error("❌ Error: Plugin package not found");
-    process.exit(1);
-  }
-
-  const settings = await pluginPackage.callFunction<QuickSSRFSettings>({
-    name: "getSettings",
-  });
-
-  await pluginPackage.callFunction({
-    name: "startInteractsh",
-    arguments: [
-      {
-        serverURL: settings.serverURL,
-        token: settings.token,
-        pollingInterval: settings.pollingInterval,
-        correlationIdLength: settings.correlationIdLength,
-        correlationIdNonceLength: settings.correlationIdNonceLength,
-      },
-    ],
-  });
-
-  const result = await pluginPackage.callFunction<GenerateUrlResult>({
-    name: "generateInteractshUrl",
-    arguments: [settings.serverURL],
-  });
-
-  console.log("✅ Generated URL: ", result.url);
+  const viewer = await client.user.viewer();
+  console.log("Viewer: ", JSON.stringify(viewer, null, 2));
 }
 
 main().catch((error: unknown) => {
