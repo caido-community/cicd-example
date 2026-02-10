@@ -1,0 +1,39 @@
+name: Run Caido Security Scan
+on:
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+
+    services:
+      caido:
+        image: caido/caido:latest
+        ports:
+          - 8080:8080
+        env:
+          CAIDO_REGISTRATION_KEY: ${{ secrets.CAIDO_REGISTRATION_KEY }}
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v6
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Install script dependencies
+        working-directory: script
+        run: pnpm install
+
+      - name: Run script
+        working-directory: script
+        run: pnpm start
